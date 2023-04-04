@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: course-catalog-service
+
+message: "[DEFAULT] Hello"
+
+#---
+#spring:
+#  config:
+#    activate:
+#      on-profile: local
+#message: "[LOCAL] Hello"
