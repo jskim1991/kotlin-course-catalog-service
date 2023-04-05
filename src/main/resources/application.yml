@@ -1,12 +1,20 @@
 spring:
   application:
     name: course-catalog-service
+  config:
+    activate:
+      on-profile: default
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: true
+  h2:
+    console:
+      enabled: true
 
 message: "[DEFAULT] Hello"
 
-#---
-#spring:
-#  config:
-#    activate:
-#      on-profile: local
-#message: "[LOCAL] Hello"
