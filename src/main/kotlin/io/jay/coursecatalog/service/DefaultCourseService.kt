@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 class DefaultCourseService(val courseRepository: CourseRepository) : CourseService {
 
     companion object : KLogging()
+
     override fun addCourse(courseDTO: CourseDTO): CourseDTO {
         val courseEntity = courseDTO.let {
             Course(null, it.name, it.category)
@@ -21,5 +22,10 @@ class DefaultCourseService(val courseRepository: CourseRepository) : CourseServi
         return savedCourse.let {
             CourseDTO(it.id, it.name, it.category)
         }
+    }
+
+    override fun getAll(): List<CourseDTO> {
+        return courseRepository.findAll()
+            .map { CourseDTO(it.id, it.name, it.category) }
     }
 }

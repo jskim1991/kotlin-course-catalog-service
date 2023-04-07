@@ -7,10 +7,10 @@ import java.time.LocalDate
 @Service
 class GreetingService {
 
-    @Value("\${message}")
+    @Value("\${message:}")
     lateinit var message: String
 
     fun greet(date: LocalDate): String {
-        return "$message $date"
+        return "$message $date".trim()
     }
 }

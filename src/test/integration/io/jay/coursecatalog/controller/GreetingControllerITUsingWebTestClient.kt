@@ -11,7 +11,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-class GreetingControllerIT {
+class GreetingControllerITUsingWebTestClient {
 
     @Autowired
     lateinit var webTestClient: WebTestClient
@@ -25,6 +25,6 @@ class GreetingControllerIT {
             .expectBody(String::class.java)
             .returnResult()
 
-        Assertions.assertEquals("[DEFAULT] Hello 2021-03-04", result.responseBody)
+        Assertions.assertEquals("2021-03-04", result.responseBody)
     }
 }

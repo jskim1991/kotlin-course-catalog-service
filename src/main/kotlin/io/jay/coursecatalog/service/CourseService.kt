@@ -4,4 +4,5 @@ import io.jay.coursecatalog.dto.CourseDTO
 
 interface CourseService {
     fun addCourse(courseDTO: CourseDTO): CourseDTO
+    fun getAll(): List<CourseDTO>
 }
