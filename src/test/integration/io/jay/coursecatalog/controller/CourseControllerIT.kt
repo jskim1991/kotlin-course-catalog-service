@@ -3,7 +3,7 @@ package io.jay.coursecatalog.controller
 import io.jay.coursecatalog.dto.CourseDTO
 import io.jay.coursecatalog.entity.Course
 import io.jay.coursecatalog.repository.CourseRepository
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +41,7 @@ class CourseControllerIT {
             .returnResult()
             .responseBody
 
-        Assertions.assertTrue(responseBody!!.id != null)
+        assertTrue(responseBody!!.id != null)
     }
 
     @Test
@@ -56,8 +56,41 @@ class CourseControllerIT {
             .returnResult()
             .responseBody
 
-        Assertions.assertEquals(1, responseBody!!.size)
-        Assertions.assertEquals("About React", responseBody[0].name)
-        Assertions.assertEquals("Engineering", responseBody[0].category)
+        assertEquals(1, responseBody!!.size)
+        assertEquals("About React", responseBody[0].name)
+        assertEquals("Engineering", responseBody[0].category)
+    }
+
+    @Test
+    fun test_update() {
+        val savedCourse = courseRepository.save(Course(null, "About React", "Engineering"))
+        val courseForUpdate = CourseDTO(null, "About Money", "Economics")
+
+        val responseBody = webTestClient.put()
+            .uri("/v1/courses/{courseId}", savedCourse.id)
+            .bodyValue(courseForUpdate)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        assertEquals(1, responseBody!!.size)
+        assertEquals(savedCourse.id, responseBody[0].id)
+        assertEquals("About Money", responseBody[0].name)
+        assertEquals("Economics", responseBody[0].category)
+    }
+
+    @Test
+    fun test_delete() {
+        val savedCourse = courseRepository.save(Course(null, "About React", "Engineering"))
+
+        webTestClient.delete()
+            .uri("/v1/courses/{courseId}", savedCourse.id)
+            .exchange()
+            .expectStatus().isNoContent
+
+        val deletedCourse = courseRepository.findById(savedCourse.id!!)
+        assertEquals(false, deletedCourse.isPresent)
     }
 }
