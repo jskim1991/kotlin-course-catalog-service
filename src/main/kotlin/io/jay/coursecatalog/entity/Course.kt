@@ -8,7 +8,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "Courses")
-open class Course(
+class Course(
     id: Int?,
     name: String,
     category: String,

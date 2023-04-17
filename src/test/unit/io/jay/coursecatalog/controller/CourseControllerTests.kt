@@ -7,13 +7,14 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @WebMvcTest(controllers = [CourseController::class])
@@ -29,6 +30,7 @@ class CourseControllerTests {
     @Nested
     inner class AddCourse {
         lateinit var course: CourseDTO
+
         @BeforeEach
         fun setUp() {
             course = CourseDTO(null, "Build House", "Engineering")
@@ -104,7 +106,7 @@ class CourseControllerTests {
         @Test
         fun returnsCourseDTOList() {
             every { mockCourseService.getAll() }
-                .returns(listOf(CourseDTO(1,"Java", "CS")))
+                .returns(listOf(CourseDTO(1, "Java", "CS")))
 
             val result = webTestClient.get()
                 .uri("/v1/courses")
@@ -167,7 +169,7 @@ class CourseControllerTests {
     }
 
     @Nested
-    inner class Delete() {
+    inner class Delete {
 
         @BeforeEach
         fun setUp() {
@@ -189,6 +191,56 @@ class CourseControllerTests {
                 .exchange()
 
             verify { mockCourseService.delete(1) }
+        }
+    }
+
+    @Nested
+    inner class ValidationAndExceptionHandler {
+        @BeforeEach
+        fun setUp() {
+            every { mockCourseService.addCourse(any()) }
+                .throws(RuntimeException("dummy"))
+        }
+
+        @Test
+        fun returnsBadRequest_whenNameIsEmpty() {
+            val result = webTestClient.post()
+                .uri("/v1/courses")
+                .bodyValue(CourseDTO(null, "", "category"))
+                .exchange()
+                .expectStatus().isBadRequest
+                .expectBody(String::class.java)
+                .returnResult()
+
+            assertEquals("CourseDTO.name must have a value", result.responseBody)
+        }
+
+        @Test
+        fun returnsBadRequest_whenCategoryIsEmpty() {
+            val result = webTestClient.post()
+                .uri("/v1/courses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(CourseDTO(null, "name", ""))
+                .exchange()
+                .expectStatus().isBadRequest
+                .expectBody(String::class.java)
+                .returnResult()
+
+            assertEquals("CourseDTO.category must have a value", result.responseBody)
+        }
+
+        @Test
+        fun handlesRuntimeException() {
+            val result = webTestClient.post()
+                .uri("/v1/courses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(CourseDTO(null, "name", "category"))
+                .exchange()
+                .expectStatus().is5xxServerError
+                .expectBody(String::class.java)
+                .returnResult()
+
+            assertEquals("dummy", result.responseBody)
         }
     }
 }
