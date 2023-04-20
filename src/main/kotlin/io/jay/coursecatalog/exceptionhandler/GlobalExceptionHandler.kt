@@ -1,5 +1,6 @@
 package io.jay.coursecatalog.exceptionhandler
 
+import io.jay.coursecatalog.exception.InstructorNotFoundException
 import mu.KLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,6 +21,12 @@ class GlobalExceptionHandler {
             .sorted()
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.joinToString(", "))
+    }
+
+    @ExceptionHandler(InstructorNotFoundException::class)
+    fun handleAll(ex: InstructorNotFoundException): ResponseEntity<String> {
+        logger.error(ex.stackTraceToString())
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.message)
     }
 
     @ExceptionHandler(RuntimeException::class)

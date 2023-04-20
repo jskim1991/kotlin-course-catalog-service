@@ -1,6 +1,7 @@
 package io.jay.coursecatalog.repository
 
 import io.jay.coursecatalog.entity.Course
+import io.jay.coursecatalog.entity.Instructor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -21,11 +22,16 @@ class CourseRepositoryIT {
     @Autowired
     lateinit var courseRepository: CourseRepository
 
+    @Autowired
+    lateinit var instructorRepository: InstructorRepository
+
     @BeforeEach
     fun setUp() {
         courseRepository.deleteAll()
-        courseRepository.save(Course(null, "About React", "Engineering"))
-        courseRepository.save(Course(null, "React.js", "Engineering"))
+        instructorRepository.deleteAll()
+        val savedInstructor = instructorRepository.save(Instructor(null, "Dr.Jay"))
+        courseRepository.save(Course(null, "About React", "Engineering", savedInstructor))
+        courseRepository.save(Course(null, "React.js", "Engineering", savedInstructor))
 
     }
 

@@ -33,9 +33,9 @@ class CourseControllerTests {
 
         @BeforeEach
         fun setUp() {
-            course = CourseDTO(null, "Build House", "Engineering")
+            course = CourseDTO(null, "Build House", "Engineering", 1)
             every { mockCourseService.addCourse(course) }
-                .returns(CourseDTO(1, "Build House", "Engineering"))
+                .returns(CourseDTO(1, "Build House", "Engineering", 1))
         }
 
         @Test
@@ -59,10 +59,10 @@ class CourseControllerTests {
 
         @Test
         fun returnsCourseDTO() {
-            val course = CourseDTO(null, "Build House", "Engineering")
+            val course = CourseDTO(null, "Build House", "Engineering", 1)
 
             every { mockCourseService.addCourse(course) }
-                .returns(CourseDTO(1, "Build House", "Engineering"))
+                .returns(CourseDTO(1, "Build House", "Engineering", 1))
 
             val result = webTestClient.post()
                 .uri("/v1/courses")
@@ -75,6 +75,7 @@ class CourseControllerTests {
             assertEquals(1, result.id)
             assertEquals("Build House", result.name)
             assertEquals("Engineering", result.category)
+            assertEquals(1, result.instructorId)
         }
     }
 
@@ -106,7 +107,7 @@ class CourseControllerTests {
         @Test
         fun returnsCourseDTOList() {
             every { mockCourseService.getAll(null) }
-                .returns(listOf(CourseDTO(1, "Java", "CS")))
+                .returns(listOf(CourseDTO(1, "Java", "CS", 1)))
 
             val result = webTestClient.get()
                 .uri("/v1/courses")
@@ -119,6 +120,7 @@ class CourseControllerTests {
             assertEquals(1, result[0].id)
             assertEquals("Java", result[0].name)
             assertEquals("CS", result[0].category)
+            assertEquals(1, result[0].instructorId)
         }
     }
 
@@ -128,9 +130,9 @@ class CourseControllerTests {
 
         @BeforeEach
         fun setUp() {
-            courseForUpdate = CourseDTO(null, "Java", "CS")
+            courseForUpdate = CourseDTO(null, "Java", "CS", 1)
             every { mockCourseService.update(1, courseForUpdate) }
-                .returns(CourseDTO(1, "Java", "CS"))
+                .returns(CourseDTO(1, "Java", "CS", 1))
         }
 
         @Test
@@ -206,7 +208,7 @@ class CourseControllerTests {
         fun returnsBadRequest_whenNameIsEmpty() {
             val result = webTestClient.post()
                 .uri("/v1/courses")
-                .bodyValue(CourseDTO(null, "", "category"))
+                .bodyValue(CourseDTO(null, "", "category", 1))
                 .exchange()
                 .expectStatus().isBadRequest
                 .expectBody(String::class.java)
@@ -220,7 +222,7 @@ class CourseControllerTests {
             val result = webTestClient.post()
                 .uri("/v1/courses")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(CourseDTO(null, "name", ""))
+                .bodyValue(CourseDTO(null, "name", "", 1))
                 .exchange()
                 .expectStatus().isBadRequest
                 .expectBody(String::class.java)
@@ -234,7 +236,7 @@ class CourseControllerTests {
             val result = webTestClient.post()
                 .uri("/v1/courses")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(CourseDTO(null, "name", "category"))
+                .bodyValue(CourseDTO(null, "name", "category", 1))
                 .exchange()
                 .expectStatus().is5xxServerError
                 .expectBody(String::class.java)
