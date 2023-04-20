@@ -82,7 +82,7 @@ class CourseControllerTests {
     inner class RetrieveAll {
         @Test
         fun returnsStatusOK() {
-            every { mockCourseService.getAll() }
+            every { mockCourseService.getAll(null) }
                 .returns(emptyList())
 
             webTestClient.get()
@@ -93,19 +93,19 @@ class CourseControllerTests {
 
         @Test
         fun callsCourseService() {
-            every { mockCourseService.getAll() }
+            every { mockCourseService.getAll(null) }
                 .returns(emptyList())
 
             webTestClient.get()
                 .uri("/v1/courses")
                 .exchange()
 
-            verify { mockCourseService.getAll() }
+            verify { mockCourseService.getAll(null) }
         }
 
         @Test
         fun returnsCourseDTOList() {
-            every { mockCourseService.getAll() }
+            every { mockCourseService.getAll(null) }
                 .returns(listOf(CourseDTO(1, "Java", "CS")))
 
             val result = webTestClient.get()

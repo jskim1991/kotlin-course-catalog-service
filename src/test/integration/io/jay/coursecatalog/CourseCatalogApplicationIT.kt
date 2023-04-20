@@ -1,4 +1,4 @@
-package io.jay.coursecatalog.controller
+package io.jay.coursecatalog
 
 import io.jay.coursecatalog.dto.CourseDTO
 import io.jay.coursecatalog.entity.Course
@@ -11,11 +11,12 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-class CourseControllerIT {
+class CourseCatalogApplicationIT {
 
     @Autowired
     lateinit var webTestClient: WebTestClient
@@ -39,9 +40,9 @@ class CourseControllerIT {
             .expectStatus().isCreated
             .expectBody(CourseDTO::class.java)
             .returnResult()
-            .responseBody
+            .responseBody!!
 
-        assertTrue(responseBody!!.id != null)
+        assertTrue(responseBody.id != null)
     }
 
     @Test
@@ -54,10 +55,31 @@ class CourseControllerIT {
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
             .returnResult()
-            .responseBody
+            .responseBody!!
 
-        assertEquals(1, responseBody!!.size)
+        assertEquals(1, responseBody.size)
         assertEquals("About React", responseBody[0].name)
+        assertEquals("Engineering", responseBody[0].category)
+    }
+
+    @Test
+    fun test_retrieveAllCoursesByName() {
+        courseRepository.save(Course(null, "About React", "Engineering"))
+        courseRepository.save(Course(null, "React.js", "Engineering"))
+
+        val uri = UriComponentsBuilder.fromUriString("/v1/courses")
+            .queryParam("course_name", "js")
+            .toUriString()
+        val responseBody = webTestClient.get()
+            .uri(uri)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody!!
+
+        assertEquals(1, responseBody.size)
+        assertEquals("React.js", responseBody[0].name)
         assertEquals("Engineering", responseBody[0].category)
     }
 
@@ -73,9 +95,9 @@ class CourseControllerIT {
             .expectStatus().isOk
             .expectBodyList(CourseDTO::class.java)
             .returnResult()
-            .responseBody
+            .responseBody!!
 
-        assertEquals(1, responseBody!!.size)
+        assertEquals(1, responseBody.size)
         assertEquals(savedCourse.id, responseBody[0].id)
         assertEquals("About Money", responseBody[0].name)
         assertEquals("Economics", responseBody[0].category)

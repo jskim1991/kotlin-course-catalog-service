@@ -25,9 +25,13 @@ class DefaultCourseService(val courseRepository: CourseRepository) : CourseServi
         }
     }
 
-    override fun getAll(): List<CourseDTO> {
-        return courseRepository.findAll()
-            .map { CourseDTO(it.id, it.name, it.category) }
+    override fun getAll(courseName: String?): List<CourseDTO> {
+        val courses = courseName?.let {
+            courseRepository.findByNameContaining(courseName)
+        } ?: courseRepository.findAll()
+
+
+        return courses.map { CourseDTO(it.id, it.name, it.category) }
     }
 
     override fun update(courseId: Int, courseDTO: CourseDTO): CourseDTO {
