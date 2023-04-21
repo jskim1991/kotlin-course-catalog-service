@@ -22,7 +22,7 @@ class DefaultCourseService(val courseRepository: CourseRepository, val instructo
     companion object : KLogging()
 
     override fun addCourse(courseDTO: CourseDTO): CourseDTO {
-        val foundInstructor = instructorService.findByInstructorId(courseDTO.instructorId!!)
+        val foundInstructor = instructorService.findByInstructorId(courseDTO.instructorId)
         if (!foundInstructor.isPresent) {
             throw InstructorNotFoundException("No instructor found for id ${courseDTO.instructorId}")
         }

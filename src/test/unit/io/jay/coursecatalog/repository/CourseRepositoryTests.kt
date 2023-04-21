@@ -4,7 +4,6 @@ import io.jay.coursecatalog.entity.Course
 import io.jay.coursecatalog.entity.Instructor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -17,7 +16,7 @@ import java.util.stream.Stream
 
 @DataJpaTest
 @ActiveProfiles("test")
-class CourseRepositoryIT {
+class CourseRepositoryTests {
 
     @Autowired
     lateinit var courseRepository: CourseRepository
